@@ -1,0 +1,37 @@
+version: "3.5"
+
+services:
+  api01: &api
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    hostname: api1
+    # network_mode: host
+    environment:
+      PORT: 9998
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: "100MB"
+
+  api02:
+    <<: *api
+    hostname: api2
+    environment:
+      PORT: 9997
+
+  lb:
+    build:
+      context: .
+      dockerfile: Dockerfile.lb
+    depends_on:
+      - api01
+      - api02
+    deploy:
+      resources:
+        limits:
+          cpus: "0.4"
+          memory: "100MB"
+    ports:
+      - "9999:9999"
